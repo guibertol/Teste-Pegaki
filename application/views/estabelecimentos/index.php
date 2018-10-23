@@ -45,132 +45,21 @@
 
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
         <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" /></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js" /></script>
-
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+        <script type="text/javascript" src="<?= base_url("js/jquery.mask.min") ?>" ></script>
 
     </head>
 
     <body>
 
-        <?php if($this->session->flashdata("success")){ ?>
-            <p class="alert alert-success"><?= $this->session->flashdata("success") ?></p>
-        <?php } ?>
-
-        <?php if($this->session->flashdata("danger")){ ?>
-            <p class="alert alert-danger"><?= $this->session->flashdata("danger") ?></p>
-        <?php } ?>
-
-        <?php if($this->session->userdata("usuario_logado")){ ?>
-            <div class="divespecial login-box-body" style="background-color: #FFF;">
-                <h1>Estabelecimentos</h1>
-                <table id="table" class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Endereço</th>
-                            <th>CEP</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($estabelecimentos as $estabelecimento){ ?>
-                            <tr>
-                                <td><?= $estabelecimento['nome']; ?></td>
-                                <td><?= $estabelecimento['endereco']; ?></td>
-                                <td><?= $estabelecimento['cep']; ?></td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-
-                <h1>Cadastro de estabelecimentos</h1>
-                <?php 
-                
-                    echo form_open("estabelecimentos/novo");
-
-                    echo form_label("Nome", "nome");
-
-                    echo form_input(array(
-                        "name" => "nome",
-                        "id" => "nome",
-                        "class" => "form-control"
-                    ));
-
-                    echo form_label("CEP", "cep");
-
-                    echo form_input(array(
-                        "name" => "cep",
-                        "id" => "cep",
-                        "class" => "form-control"
-                    ));
-
-                    echo form_label("Endereço", "endereco");
-
-                    echo form_input(array(
-                        "name" => "endereco",
-                        "id" => "endereco",
-                        "class" => "form-control"
-                    ));
-
-                    echo form_button(array(
-                        "class" => "btn btn-success",
-                        "type" => "submit",
-                        "content" => "Cadastrar"
-                    ));
-
-                    echo form_close();
-
-                ?>
-            </div>
-        <?php } ?>
-
-        <?php if(!$this->session->userdata("usuario_logado")){ ?>
-        
-        <div class="login-box">
-            <div class="login-box-body">
-                <p class="login-box-msg">Iniciar Sessão</p>
-                <?php 
-                
-                    echo form_open("login/autenticar");
-
-                    echo form_label("E-mail", "email");
-
-                    echo form_input(array(
-                        "name" => "email",
-                        "id" => "email",
-                        "class" => "form-control"
-                    ));
-
-                    echo form_label("Senha", "senha");
-
-                    echo form_input(array(
-                        "name" => "senha",
-                        "id" => "senha",
-                        "class" => "form-control"
-                    ));
-
-                    echo form_button(array(
-                        "class" => "btn btn-info",
-                        "type" => "submit",
-                        "content" => "Login"
-                    ));
-
-                    echo form_close();
-
-                ?>
-            </div>
-        </div>
-
-        
-        <?php }else{ ?>
-
-
-            <div class="login-box" style="width: 0px;"><?= anchor("login/logout", "Sair", array("class" => "btn btn-info")) ?></div>
-        <?php } ?>
-
-        
+        <div id="include"></div>
             
         <script>
+
+            function padrao(){
+
+            $('#cep').mask('00000-000');
 
             $(document).ready(function() {
                 $('#table').DataTable({
@@ -200,9 +89,6 @@
                 });
             } );
 
-        </script>
-
-        <script>
             
             $(function(){
                 $("#cep").blur(function(){
@@ -218,17 +104,131 @@
                         cep : cep
                     }, 
                     function(dados){
+
+                        if(dados.logradouro != null){
+                            var endereco = dados.logradouro + ', ' + dados.bairro + ', ' + dados.localidade + ', ' + dados.uf;
+                            $('#endereco').val(endereco);
+                            console.log(dados);
+                        }else{
+                            alert('cep não localizado, por favor tente novamente');
+                            $('#cep').val('');
+                            $('#endereco').val('');
+                        }
+
                         //$('#rua').val(dados.logradouro);
                         //$('#bairro').val(dados.bairro);
                         //$('#cidade').val(dados.localidade);
                         //$('#estado').val(dados.uf);
                         //$('#btn_consulta').html('Consultar');
-                        var endereco = dados.logradouro + ', ' + dados.bairro + ', ' + dados.localidade + ', ' + dados.uf;
-                        $('#endereco').val(endereco);
-                        console.log(dados);
+                        
                     }, 'json');
                 });
             });
+
+            }
+
+            function status_verificar(){
+
+                var dados = {
+                    token : '<?php echo $this->session->userdata("json_token"); ?>'
+                }
+
+                $.post('estabelecimentos/verificarToken', dados, function(retorno){
+                    console.log(retorno);
+                });
+
+                
+            }
+
+            function login(){
+
+                var email = $('#email').val();
+                var senha = $('#senha').val();
+
+                var dados = {
+                    email : email,
+                    senha : senha
+                }
+
+                $.post('login/autenticar', dados, function(retorno){
+
+                    if(retorno != '0'){
+                        assinar(retorno);
+                        location.reload();
+                    }else{
+                        $('#erro_login').css('display', 'block');
+                    }
+                    
+                });
+
+
+            }
+
+            function assinar(token){
+                localStorage.setItem("token", token);
+                return;
+            }
+
+            valor = '';
+            function recuperar(){
+
+                var token = localStorage.getItem("token");
+                var variavel = '';
+                
+                if(token == '0' || localStorage.getItem("token") == null){
+
+                    variavel = '0';
+
+                }else{
+
+                    var dados = {
+                        token : token
+                    }
+                    
+                    $.post('estabelecimentos/verificarToken', dados, function(retorno){
+                    
+                        if(retorno == '1'){
+                            
+                            $.post('estabelecimentos/viewLogado', '', function(retorno){
+                                $('#include').html(retorno);
+                                padrao();
+                            });
+
+
+                        }
+
+                    });
+                    
+                }
+
+                return valor;
+
+            }
+
+            function logout(){
+                localStorage.clear();
+                location.reload();
+
+            }
+
+            function verificar_login(){
+
+                var valor = recuperar();
+
+                if(valor == '1'){
+
+                    
+                }else{
+
+                    $.post('estabelecimentos/viewNaoLogado', '', function(retorno){
+                        $('#include').html(retorno);
+                    });
+
+                }
+
+            }
+
+            verificar_login();
             
             
         </script>
