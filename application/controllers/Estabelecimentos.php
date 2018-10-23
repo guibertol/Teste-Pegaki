@@ -34,7 +34,7 @@ class Estabelecimentos extends CI_Controller {
         
         echo $this->curl->consulta($cep);
         
-    }
+	}
 
 }
 

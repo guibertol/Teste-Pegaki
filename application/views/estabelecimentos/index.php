@@ -1,5 +1,6 @@
 <html>
     <head>
+        
         <link rel="stylesheet" href="<?= base_url("css/bootstrap.css") ?>" />
         <title>Teste Guilherme Bertol</title>
 
@@ -159,8 +160,11 @@
                 ?>
             </div>
         </div>
+
         
         <?php }else{ ?>
+
+
             <div class="login-box" style="width: 0px;"><?= anchor("login/logout", "Sair", array("class" => "btn btn-info")) ?></div>
         <?php } ?>
 

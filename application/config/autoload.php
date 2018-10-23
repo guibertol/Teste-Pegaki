@@ -133,3 +133,27 @@ $autoload['language'] = array();
 |	$autoload['model'] = array('first_model' => 'first');
 */
 $autoload['model'] = array();
+
+/*
+| -------------------------------------------------------------------
+|  Auto-load Helper Files
+| -------------------------------------------------------------------
+| Prototype:
+|
+|	$autoload['helper'] = array('url', 'file');
+*/
+$autoload['helper'] = array('url', 'form', 'jwt', "authorization", "date");
+
+/*
+| -------------------------------------------------------------------
+|  Auto-load Config files
+| -------------------------------------------------------------------
+| Prototype:
+|
+|	$autoload['config'] = array('config1', 'config2');
+|
+| NOTE: This item is intended for use ONLY if you have created custom
+| config files.  Otherwise, leave it blank.
+|
+*/
+$autoload['config'] = array('jwt');

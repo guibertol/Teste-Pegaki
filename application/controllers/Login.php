@@ -14,6 +14,7 @@ class Login extends CI_Controller {
         if($usuario){
             $this->session->set_userdata("usuario_logado", $usuario);
             $this->session->set_flashdata("success", "Logado com sucesso");
+            //$infor = json_encode($status);
         }else{
             $this->session->set_flashdata("danger", "Erro ao efetuar login");
         }
